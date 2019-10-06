@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  linux:
+    image: golang:1.13
+    working_dir: /go/src/
+    volumes:
+      - $PWD:/go/src
+      - $PWD/rootfs:/rootfs
+    privileged: true
+    command: /bin/bash
