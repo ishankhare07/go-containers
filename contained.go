@@ -29,7 +29,7 @@ func run() {
 
 	// namespaces
 	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Cloneflags: syscall.CLONE_NEWUTS | syscall.CLONE_NEWPID,
+		Cloneflags: syscall.CLONE_NEWUTS | syscall.CLONE_NEWPID | syscall.CLONE_NEWNET,
 	}
 
 	must(cmd.Run())
@@ -43,10 +43,13 @@ func child() {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	must(syscall.Chroot("/rootfs"))
+	must(syscall.Chroot("/ubuntu_rootfs"))
 	must(os.Chdir("/"))
 	must(syscall.Mount("proc", "proc", "proc", 0, ""))
+
+	must(syscall.Sethostname([]byte("container")))
 	must(cmd.Run())
+	must(syscall.Unmount("proc", 0))
 }
 
 func must(err error) {
